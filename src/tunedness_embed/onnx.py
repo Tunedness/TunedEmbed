@@ -78,4 +78,7 @@ class OnnxEmbedder:
         mask = attention_mask[:, :, np.newaxis].astype(np.float32)
         summed = (hidden * mask).sum(axis=1)
         counts = np.clip(mask.sum(axis=1), 1e-9, None)
-        return (summed / counts).astype(np.float32, copy=False)
+        # Explicit annotation: older numpy stubs (resolved on Python 3.11) type
+        # this expression as Any, which trips mypy's no-any-return.
+        pooled: Matrix = (summed / counts).astype(np.float32, copy=False)
+        return pooled
